@@ -1,0 +1,33 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29326.143
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VisualStudioStreamDeck", "VisualStudioStreamDeck\VisualStudioStreamDeck.csproj", "{864CB26B-F462-4117-A397-0FA278EF90F4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{37ED0DD3-6350-4FAB-8FD2-CE2BAA90FA43}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		CHANGELOG.md = CHANGELOG.md
+		postbuild.ps1 = postbuild.ps1
+		README.md = README.md
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{864CB26B-F462-4117-A397-0FA278EF90F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{864CB26B-F462-4117-A397-0FA278EF90F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{864CB26B-F462-4117-A397-0FA278EF90F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{864CB26B-F462-4117-A397-0FA278EF90F4}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {BB2BCAC5-D8B7-4289-9F6B-DC892036E14B}
+	EndGlobalSection
+EndGlobal

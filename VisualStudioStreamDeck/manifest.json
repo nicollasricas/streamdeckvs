@@ -1,0 +1,36 @@
+{
+  "Actions": [
+    {
+      "Icon": "Images/VisualStudio",
+      "Name": "Execute Command",
+      "States": [
+        {
+          "Image": "Images/VisualStudio"
+        }
+      ],
+      "Tooltip": "Executes a Visual Studio command with the given command identifier (Command ID).",
+      "SupportedInMultiActions": false,
+      "PropertyInspectorPath": "PropertyInspector/ExecuteCommand.html",
+      "UUID": "com.nicollasr.visualstudiostreamdeck.executeCommand"
+    }
+  ],
+  "SDKVersion": 2,
+  "Author": "Nicollas Ricas",
+  "CodePath": "com.nicollasr.visualstudiostreamdeck",
+  "Description": "Enables Stream Deck integration with Visual Studio 2017 and 2019.",
+  "Name": "Visual Studio 2017 & 2019",
+  "Icon": "Images/logo",
+  "Category": "Visual Studio",
+  "CategoryIcon": "Images/VisualStudio",
+  "URL": "https://github.com/nicollasricas/vscode-streamdeck",
+  "Version": "1.0.0",
+  "OS": [
+    {
+      "Platform": "windows",
+      "MinimumVersion": "10"
+    }
+  ],
+  "Software": {
+    "MinimumVersion": "4.1"
+  }
+}
