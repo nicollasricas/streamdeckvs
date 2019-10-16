@@ -1,6 +1,6 @@
 ﻿using BarRaider.SdTools;
 
-namespace VisualStudioStreamDeck
+namespace StreamDeckVS
 {
     internal class Program
     {

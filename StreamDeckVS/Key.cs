@@ -1,7 +1,7 @@
 ﻿using BarRaider.SdTools;
 using Newtonsoft.Json.Linq;
 
-namespace VisualStudioStreamDeck
+namespace StreamDeckVS
 {
     public class KeySettings
     {

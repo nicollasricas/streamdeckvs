@@ -4,7 +4,7 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net472</TargetFramework>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <AssemblyName>com.nicollasr.visualstudiostreamdeck</AssemblyName>
+    <AssemblyName>com.nicollasr.streamdeckvs</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -27,7 +27,7 @@
     <PackageReference Include="StreamDeck-Tools" Version="2.6.0" />
   </ItemGroup>
   <ItemGroup>
-    <None Update="Images\logo.png">
+    <None Update="Images\Logo.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Images\VisualStudio%402x.png">

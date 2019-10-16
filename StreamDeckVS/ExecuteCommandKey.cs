@@ -3,9 +3,9 @@ using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
 using BarRaider.SdTools;
 
-namespace VisualStudioStreamDeck
+namespace StreamDeckVS
 {
-    [PluginActionId("com.nicollasr.visualstudiostreamdeck.executeCommand")]
+    [PluginActionId("com.nicollasr.streamdeckvs.executecommand")]
     public class ExecuteCommandKey : Key<ExecuteCommandSettings>
     {
         public ExecuteCommandKey(SDConnection connection, InitialPayload payload) : base(connection, payload)
@@ -18,16 +18,11 @@ namespace VisualStudioStreamDeck
 
             try
             {
-                var dte = GetDTE();
-
-                if (dte != null)
-                {
-                    dte.ExecuteCommand(settings.Command);
-                }
+                GetDTE()?.ExecuteCommand(settings.Command);
             }
             catch (Exception ex)
             {
-                Logger.Instance.LogMessage(TracingLevel.ERROR, "Exception: " + ex.Message);
+                Logger.Instance.LogMessage(TracingLevel.ERROR, ex.Message);
             }
         }
 
@@ -75,6 +70,8 @@ namespace VisualStudioStreamDeck
                     {
                         Marshal.ReleaseComObject(bindContext);
                     }
+
+                    Logger.Instance.LogMessage(TracingLevel.INFO, $"ROT Object found: {runningObjectName}");
 
                     return runningObject as EnvDTE.DTE;
                 }

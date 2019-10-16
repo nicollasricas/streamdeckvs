@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace VisualStudioStreamDeck
+namespace StreamDeckVS
 {
     public class ExecuteCommandSettings : KeySettings
     {
