@@ -72,6 +72,9 @@
     <None Update="PropertyInspector\js\index_pi.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="PropertyInspector\js\pi.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="powershell -ExecutionPolicy Unrestricted -File &quot;$(SolutionDir)postbuild.ps1&quot; &quot;$(TargetName),$(ProjectDir)$(OutDir)\&quot;" />
