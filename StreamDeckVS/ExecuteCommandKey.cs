@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
 using BarRaider.SdTools;
+using EnvDTE;
 
 namespace StreamDeckVS
 {
@@ -18,7 +21,24 @@ namespace StreamDeckVS
 
             try
             {
-                GetDTE()?.ExecuteCommand(settings.Command);
+                var (foregroundHandle, foregroundProcessId) = GetForeground();
+
+                if (IsVisualStudioInstanceFocused(foregroundProcessId))
+                {
+                    GetDTEInstances((int)foregroundProcessId).FirstOrDefault()?.ExecuteCommand(settings.Command);
+                }
+                else
+                {
+                    foreach (var dte in GetDTEInstances())
+                    {
+                        if (IsFocusingDebugProcess(foregroundProcessId, dte))
+                        {
+                            dte.ExecuteCommand(settings.Command);
+
+                            break;
+                        }
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -26,58 +46,101 @@ namespace StreamDeckVS
             }
         }
 
-        private EnvDTE.DTE GetDTE()
+        private (IntPtr handle, uint processId) GetForeground()
         {
-            var window = WindowsAPI.GetForegroundWindow();
+            var foreground = WindowsAPI.GetForegroundWindow();
 
-            WindowsAPI.GetWindowThreadProcessId(window, out var processPid);
+            WindowsAPI.GetWindowThreadProcessId(foreground, out var pid);
 
-            if (processPid < 0)
+            return (handle: foreground, processId: pid);
+        }
+
+        private bool IsVisualStudioInstanceFocused(uint processId)
+        {
+            return System.Diagnostics.Process.GetProcessById((int)processId)
+                .ProcessName.Equals("devenv", StringComparison.InvariantCultureIgnoreCase);
+        }
+
+        private static bool IsFocusingDebugProcess(uint processId, DTE dte)
+        {
+            if (dte.Debugger?.DebuggedProcesses?.Count > 0)
             {
-                return null;
-            }
-
-            Logger.Instance.LogMessage(TracingLevel.INFO, $"Foreground Process PID: {processPid}");
-
-            Marshal.ThrowExceptionForHR(WindowsAPI.CreateBindCtx(0, out var bindContext));
-
-            bindContext.GetRunningObjectTable(out var runningTable);
-
-            runningTable.EnumRunning(out var monikers);
-
-            var moniker = new IMoniker[1];
-            var fetchedMonikers = IntPtr.Zero;
-
-            while (monikers.Next(1, moniker, fetchedMonikers) == 0)
-            {
-                moniker[0].GetDisplayName(bindContext, null, out var runningObjectName);
-
-                if (runningObjectName == $"!VisualStudio.DTE.16.0:{processPid}" || runningObjectName == $"!VisualStudio.DTE.15.0:{processPid}")
+                foreach (EnvDTE.Process debuggedProcess in dte.Debugger.DebuggedProcesses)
                 {
-                    Marshal.ThrowExceptionForHR(runningTable.GetObject(moniker[0], out var runningObject));
-
-                    if (monikers != null)
+                    if (debuggedProcess.ProcessID == processId)
                     {
-                        Marshal.ReleaseComObject(monikers);
+                        Logger.Instance.LogMessage(TracingLevel.INFO, $"Debugging process found, id: {processId}");
+
+                        return true;
                     }
-
-                    if (runningTable != null)
-                    {
-                        Marshal.ReleaseComObject(runningTable);
-                    }
-
-                    if (bindContext != null)
-                    {
-                        Marshal.ReleaseComObject(bindContext);
-                    }
-
-                    Logger.Instance.LogMessage(TracingLevel.INFO, $"ROT Object found: {runningObjectName}");
-
-                    return runningObject as EnvDTE.DTE;
                 }
             }
 
-            return null;
+            return false;
+        }
+
+        private IEnumerable<EnvDTE.DTE> GetDTEInstances(int? processId = null)
+        {
+            var dteInstances = new List<DTE>();
+            IBindCtx bindCtx = null;
+            IRunningObjectTable runningObjects = null;
+            IEnumMoniker monikers = null;
+
+            try
+            {
+                Marshal.ThrowExceptionForHR(WindowsAPI.CreateBindCtx(0, out bindCtx));
+
+                bindCtx.GetRunningObjectTable(out runningObjects);
+
+                runningObjects.EnumRunning(out monikers);
+
+                var moniker = new IMoniker[1];
+                var fetchedMonikers = IntPtr.Zero;
+
+                while (monikers.Next(1, moniker, fetchedMonikers) == 0)
+                {
+                    moniker[0].GetDisplayName(bindCtx, null, out var rotName);
+
+                    if (rotName.StartsWith("!VisualStudio.DTE.16.0:") || rotName.StartsWith("!VisualStudio.DTE.15.0:"))
+                    {
+                        Marshal.ThrowExceptionForHR(runningObjects.GetObject(moniker[0], out var runningObject));
+
+                        if (runningObject is EnvDTE.DTE dte)
+                        {
+                            Logger.Instance.LogMessage(TracingLevel.INFO, $"ROT Object Found ${rotName}");
+
+                            if (processId.HasValue && int.TryParse(rotName.Substring(23), out var rotProcessId) && rotProcessId == processId)
+                            {
+                                dteInstances.Clear();
+                                dteInstances.Add(dte);
+
+                                break;
+                            }
+
+                            dteInstances.Add(dte);
+                        }
+                    }
+                }
+
+                return dteInstances.AsEnumerable();
+            }
+            finally
+            {
+                if (monikers != null)
+                {
+                    Marshal.ReleaseComObject(monikers);
+                }
+
+                if (runningObjects != null)
+                {
+                    Marshal.ReleaseComObject(runningObjects);
+                }
+
+                if (bindCtx != null)
+                {
+                    Marshal.ReleaseComObject(bindCtx);
+                }
+            }
         }
     }
 }

@@ -23,7 +23,7 @@
   "Category": "Visual Studio",
   "CategoryIcon": "Images/VisualStudio",
   "URL": "https://github.com/nicollasricas/streamdeckvs",
-  "Version": "1.0.1",
+  "Version": "2.0.1",
   "OS": [
     {
       "Platform": "windows",
