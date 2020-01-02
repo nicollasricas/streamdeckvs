@@ -86,6 +86,8 @@ namespace StreamDeckVS
             IRunningObjectTable runningObjects = null;
             IEnumMoniker monikers = null;
 
+            var foundByProcessId = false;
+
             try
             {
                 Marshal.ThrowExceptionForHR(WindowsAPI.CreateBindCtx(0, out bindCtx));
@@ -107,10 +109,12 @@ namespace StreamDeckVS
 
                         if (runningObject is EnvDTE.DTE dte)
                         {
-                            Logger.Instance.LogMessage(TracingLevel.INFO, $"ROT Object Found ${rotName}");
+                            Logger.Instance.LogMessage(TracingLevel.INFO, $"ROT Object Found {rotName}");
 
                             if (processId.HasValue && int.TryParse(rotName.Substring(23), out var rotProcessId) && rotProcessId == processId)
                             {
+                                foundByProcessId = true;
+
                                 dteInstances.Clear();
                                 dteInstances.Add(dte);
 
@@ -120,6 +124,11 @@ namespace StreamDeckVS
                             dteInstances.Add(dte);
                         }
                     }
+                }
+
+                if (processId.HasValue && !foundByProcessId)
+                {
+                    return Enumerable.Empty<EnvDTE.DTE>();
                 }
 
                 return dteInstances.AsEnumerable();
