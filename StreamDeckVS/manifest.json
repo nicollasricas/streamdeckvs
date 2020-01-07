@@ -1,11 +1,11 @@
 {
   "Actions": [
     {
-      "Icon": "Images/VisualStudio",
+      "Icon": "Images/ExecuteCommand",
       "Name": "Execute Command",
       "States": [
         {
-          "Image": "Images/VisualStudio"
+          "Image": "Images/ExecuteCommand"
         }
       ],
       "Tooltip": "Executes a Visual Studio command with the given command identifier (Command ID).",
@@ -23,7 +23,7 @@
   "Category": "Visual Studio",
   "CategoryIcon": "Images/VisualStudio",
   "URL": "https://github.com/nicollasricas/streamdeckvs",
-  "Version": "2.0.2",
+  "Version": "2.1.2",
   "OS": [
     {
       "Platform": "windows",

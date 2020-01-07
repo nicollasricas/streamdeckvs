@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.1.2] - 2020-01-06
+
+### Changed
+
+- Execute command icon ([Visual Studio 2017 Image Library](https://docs.microsoft.com/pt-br/visualstudio/designers/the-visual-studio-image-library?view=vs-2019))
+- Notes and requirements.
+- Update dependencies.
+
 ## [2.0.2] - 2020-01-02
 
 ### Changed
