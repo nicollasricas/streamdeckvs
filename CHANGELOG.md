@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.1.2] - 2020-02-24
+
+### Added
+
+- Multi-action support
+
 ## [2.1.2] - 2020-01-06
 
 ### Changed
