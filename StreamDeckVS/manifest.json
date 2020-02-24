@@ -9,7 +9,7 @@
         }
       ],
       "Tooltip": "Executes a Visual Studio command with the given command identifier (Command ID).",
-      "SupportedInMultiActions": false,
+      "SupportedInMultiActions": true,
       "PropertyInspectorPath": "PropertyInspector/ExecuteCommand.html",
       "UUID": "com.nicollasr.streamdeckvs.executecommand"
     }
@@ -23,7 +23,7 @@
   "Category": "Visual Studio",
   "CategoryIcon": "Images/VisualStudio",
   "URL": "https://github.com/nicollasricas/streamdeckvs",
-  "Version": "2.1.2",
+  "Version": "3.1.2",
   "OS": [
     {
       "Platform": "windows",
