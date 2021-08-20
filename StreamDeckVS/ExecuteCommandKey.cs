@@ -103,7 +103,7 @@ namespace StreamDeckVS
                 {
                     moniker[0].GetDisplayName(bindCtx, null, out var rotName);
 
-                    if (rotName.StartsWith("!VisualStudio.DTE.16.0:") || rotName.StartsWith("!VisualStudio.DTE.15.0:"))
+                    if (rotName.StartsWith("!VisualStudio.DTE.17.0:")  || rotName.StartsWith("!VisualStudio.DTE.16.0:") || rotName.StartsWith("!VisualStudio.DTE.15.0:"))
                     {
                         Marshal.ThrowExceptionForHR(runningObjects.GetObject(moniker[0], out var runningObject));
 
