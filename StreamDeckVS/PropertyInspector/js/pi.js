@@ -11,9 +11,9 @@ function connectElgatoStreamDeckSocket(inPort, inUUID, inRegisterEvent, inInfo, 
 
 function connect() {
   socket = new WebSocket("ws://127.0.0.1:" + inspector.port);
-  socket.onopen = _ => connectedToPropertyInspector();
-  socket.onmessage = message => messageReceived(message);
-  socket.onclose = _ => connect();
+  socket.onopen = (_) => connectedToPropertyInspector();
+  socket.onmessage = (message) => messageReceived(message);
+  socket.onclose = (_) => connect();
 }
 
 function connectedToPropertyInspector() {
@@ -36,7 +36,7 @@ function registerPropertyInspector() {
   socket.send(
     JSON.stringify({
       event: inspector.registerEvent,
-      uuid: inspector.uuid
+      uuid: inspector.uuid,
     })
   );
 }
@@ -46,12 +46,18 @@ function isConnectedToPropertyInspector() {
 }
 
 function registerChangeDetection() {
-  getInputs().forEach(element => element.addEventListener("input", () => saveSettings()));
+  getInputs().forEach((element) => {
+    if (element.tagName === "SELECT") {
+      element.addEventListener("change", () => saveSettings());
+    } else {
+      element.addEventListener("input", () => saveSettings());
+    }
+  });
 }
 
 function getInputs() {
-  return Array.from(document.querySelectorAll(".sdpi-item-value")).map(element => {
-    if (element.tagName !== "INPUT") {
+  return Array.from(document.querySelectorAll(".sdpi-item-value")).map((element) => {
+    if (element.tagName !== "INPUT" && element.tagName !== "TEXTAREA" && element.tagName !== "SELECT") {
       return element.querySelector("input");
     }
 
@@ -64,7 +70,7 @@ function requestSettings() {
     socket.send(
       JSON.stringify({
         event: "getSettings",
-        context: inspector.uuid
+        context: inspector.uuid,
       })
     );
   }
@@ -88,9 +94,11 @@ function saveSettings() {
   if (isConnectedToPropertyInspector()) {
     let payload = {};
 
-    getInputs().forEach(element => {
+    getInputs().forEach((element) => {
       if (element.type === "checkbox") {
         payload[element.id] = element.checked ? true : false;
+      } else if (element.tagName === "SELECT") {
+        payload[element.id] = element.options[element.selectedIndex].value;
       } else {
         payload[element.id] = element.value;
       }
@@ -100,7 +108,7 @@ function saveSettings() {
       JSON.stringify({
         event: "setSettings",
         context: inspector.uuid,
-        payload
+        payload,
       })
     );
   }

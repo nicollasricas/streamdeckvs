@@ -18,12 +18,12 @@
   "Author": "Nicollas R.",
   "CodePath": "com.nicollasr.streamdeckvs",
   "Description": "Enables Stream Deck integration with Visual Studio 2017 and 2019.",
-  "Name": "Visual Studio 2017 & 2019",
+  "Name": "Visual Studio 2017, 2019 & 2022",
   "Icon": "Images/VisualStudio",
   "Category": "Visual Studio",
   "CategoryIcon": "Images/VisualStudio",
   "URL": "https://github.com/nicollasricas/streamdeckvs",
-  "Version": "3.1.2",
+  "Version": "3.2.2",
   "OS": [
     {
       "Platform": "windows",

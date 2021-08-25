@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Runtime.InteropServices.ComTypes;
+using System.Management;
 using BarRaider.SdTools;
 using EnvDTE;
 
@@ -21,22 +20,29 @@ namespace StreamDeckVS
 
             try
             {
-                var (foregroundHandle, foregroundProcessId) = GetForeground();
+                var (processHandle, processId) = Windows32API.GetForeground();
 
-                if (IsVisualStudioInstanceFocused(foregroundProcessId))
+                if (IsProcessVisualStudio(processId))
                 {
-                    GetDTEInstances((int)foregroundProcessId).FirstOrDefault()?.ExecuteCommand(settings.Command);
+                    ExecuteCommand(DTEAPI.GetDTE(processId).FirstOrDefault(), settings);
                 }
                 else
                 {
-                    foreach (var dte in GetDTEInstances())
-                    {
-                        if (IsFocusingDebugProcess(foregroundProcessId, dte))
-                        {
-                            dte.ExecuteCommand(settings.Command);
+                    var dte = DTEAPI.GetDTE().FirstOrDefault(m => IsProcessAttachedToDebug(processId, m));
 
-                            break;
+                    if (dte is null)
+                    {
+                        var processCommandLine = GetProcessCommandLine(processId);
+
+                        if (IsLinkedByPipe(processCommandLine))
+                        {
+                            ExecuteCommand(DTEAPI.GetDTE(GetVisualStudioPIDFromPipeLink(processCommandLine))
+                                .FirstOrDefault(), settings);
                         }
+                    }
+                    else
+                    {
+                        ExecuteCommand(dte, settings);
                     }
                 }
             }
@@ -46,22 +52,39 @@ namespace StreamDeckVS
             }
         }
 
-        private (IntPtr handle, uint processId) GetForeground()
+        private int GetVisualStudioPIDFromPipeLink(string link)
         {
-            var foreground = WindowsAPI.GetForegroundWindow();
+            var indexLength = @"\\.\pipe\Microsoft-VisualStudio-Debug-Console-".Length;
 
-            WindowsAPI.GetWindowThreadProcessId(foreground, out var pid);
+            var start = link.IndexOf(@"\\.\pipe\Microsoft-VisualStudio-Debug-Console-");
 
-            return (handle: foreground, processId: pid);
+            if (start >= 0)
+            {
+                var end = link.IndexOf(" ", start);
+
+                if (end >= 0)
+                {
+                    if (int.TryParse(link.Substring(start + indexLength, end - start - indexLength), out var pid))
+                    {
+                        return pid;
+                    }
+                }
+            }
+
+            return 0;
         }
 
-        private bool IsVisualStudioInstanceFocused(uint processId)
+        private bool IsLinkedByPipe(string arguments) => arguments.Contains(@"\\.\pipe\Microsoft-VisualStudio-Debug-Console-");
+
+        private void ExecuteCommand(DTE dte, ExecuteCommandSettings settings) => dte?.ExecuteCommand(settings.Command);
+
+        private bool IsProcessVisualStudio(int processId)
         {
-            return System.Diagnostics.Process.GetProcessById((int)processId)
+            return System.Diagnostics.Process.GetProcessById(processId)
                 .ProcessName.Equals("devenv", StringComparison.InvariantCultureIgnoreCase);
         }
 
-        private static bool IsFocusingDebugProcess(uint processId, DTE dte)
+        private static bool IsProcessAttachedToDebug(int processId, DTE dte)
         {
             if (dte.Debugger?.DebuggedProcesses?.Count > 0)
             {
@@ -79,76 +102,19 @@ namespace StreamDeckVS
             return false;
         }
 
-        private IEnumerable<EnvDTE.DTE> GetDTEInstances(int? processId = null)
+        private string GetProcessCommandLine(int processId)
         {
-            var dteInstances = new List<DTE>();
-            IBindCtx bindCtx = null;
-            IRunningObjectTable runningObjects = null;
-            IEnumMoniker monikers = null;
-
-            var foundByProcessId = false;
-
             try
             {
-                Marshal.ThrowExceptionForHR(WindowsAPI.CreateBindCtx(0, out bindCtx));
+                var wmi = new ManagementObjectSearcher("root\\CIMV2", $"SELECT * FROM Win32_Process where ProcessId = {processId}");
 
-                bindCtx.GetRunningObjectTable(out runningObjects);
+                var process = Enumerable.FirstOrDefault(wmi.Get() as IEnumerable<ManagementObject>);
 
-                runningObjects.EnumRunning(out monikers);
-
-                var moniker = new IMoniker[1];
-                var fetchedMonikers = IntPtr.Zero;
-
-                while (monikers.Next(1, moniker, fetchedMonikers) == 0)
-                {
-                    moniker[0].GetDisplayName(bindCtx, null, out var rotName);
-
-                    if (rotName.StartsWith("!VisualStudio.DTE.16.0:") || rotName.StartsWith("!VisualStudio.DTE.15.0:"))
-                    {
-                        Marshal.ThrowExceptionForHR(runningObjects.GetObject(moniker[0], out var runningObject));
-
-                        if (runningObject is EnvDTE.DTE dte)
-                        {
-                            Logger.Instance.LogMessage(TracingLevel.INFO, $"ROT Object Found {rotName}");
-
-                            if (processId.HasValue && int.TryParse(rotName.Substring(23), out var rotProcessId) && rotProcessId == processId)
-                            {
-                                foundByProcessId = true;
-
-                                dteInstances.Clear();
-                                dteInstances.Add(dte);
-
-                                break;
-                            }
-
-                            dteInstances.Add(dte);
-                        }
-                    }
-                }
-
-                if (processId.HasValue && !foundByProcessId)
-                {
-                    return Enumerable.Empty<EnvDTE.DTE>();
-                }
-
-                return dteInstances.AsEnumerable();
+                return (string)process?["CommandLine"];
             }
-            finally
+            catch
             {
-                if (monikers != null)
-                {
-                    Marshal.ReleaseComObject(monikers);
-                }
-
-                if (runningObjects != null)
-                {
-                    Marshal.ReleaseComObject(runningObjects);
-                }
-
-                if (bindCtx != null)
-                {
-                    Marshal.ReleaseComObject(bindCtx);
-                }
+                return string.Empty;
             }
         }
     }

@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.2.2]  2021-08-25
+
+### Added
+
+- Improved command execution (debugging process)
+- Added support to visual studio 2022 (thanks to @EngstromJimmy)
+- Code refactoring
+
+
 ## [3.1.2] - 2020-02-24
 
 ### Added
