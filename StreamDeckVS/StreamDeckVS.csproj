@@ -87,6 +87,6 @@
     </None>
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="if $(ConfigurationName) == Release powershell -ExecutionPolicy Unrestricted -File &quot;$(SolutionDir)postbuild.ps1&quot; &quot;$(TargetName),$(ProjectDir)$(OutDir)\&quot;" />
+    <Exec Command="powershell.exe -NonInteractive -ExecutionPolicy Unrestricted -Command &quot;. '$(SolutionDir)postbuild.ps1' -targetName '$(TargetName)' -outputDir '$(ProjectDir)$(OutDir)'&quot;" />
   </Target>
 </Project>
