@@ -13,50 +13,57 @@
     <script src="js/pi.js"></script>
   </head>
   <body>
-    <div class="sdpi-wrapper">
-      <div
-        class="sdpi-item"
-        title="Use 'Command Explorer' extension from Visual Studio Marketplace to get the commands name. e.g.: View.C#Interactive."
-      >
-        <div class="sdpi-item-label">Command (Name)</div>
-        <input
-          class="sdpi-item-value"
-          type="text"
-          id="command"
-          value=""
-          placeholder="e.g.: View.C#Interactive"
-          required
-        />
+      <div class="sdpi-wrapper">
+          <div class="sdpi-item"
+               title="Use 'Command Explorer' extension from Visual Studio Marketplace to get the commands name. e.g.: View.C#Interactive.">
+              <div class="sdpi-item-label">Command (Name)</div>
+              <input class="sdpi-item-value"
+                     type="text"
+                     id="command"
+                     value=""
+                     placeholder="e.g.: View.C#Interactive"
+                     required />
+          </div>
+
+          <div class="sdpi-item"
+               title="Many commands does not take arguments, leave this empty if you are unsure">
+              <div class="sdpi-item-label">Command Args</div>
+              <input class="sdpi-item-value"
+                     type="text"
+                     id="commandargs"
+                     value=""
+                     placeholder="" />
+          </div>
+
+          <div class="sdpi-item alignTop">
+              <div class="sdpi-item-label empty"></div>
+              <details open class="noInnerMargins">
+                  <summary>Notes</summary>
+                  <p>
+                      Commands won't be sent to Visual Studio if it's running with admin rights unless you run Stream Deck with
+                      admin rights too.
+                  </p>
+                  <br />
+                  <p>
+                      You can use the action keys at any time whereas you are focusing on a Visual Studio instance or a debugging
+                      application started by that instance.
+                  </p>
+                  <br />
+                  <p>
+                      Use
+                      <a href="https://marketplace.visualstudio.com/items?itemName=MadsKristensen.CommandExplorer"
+                         target="_blank">
+                          Command Explorer
+                      </a>
+                      extension from Visual Studio Marketplace to get the commands name. e.g.: View.C#Interactive.
+                  </p>
+                  <p>
+                      Most command does not take an argument, if you are unsure just leave the command args empty
+                  </p>
+              </details>
+          </div>
       </div>
 
-      <div class="sdpi-item alignTop">
-        <div class="sdpi-item-label empty"></div>
-        <details open class="noInnerMargins">
-          <summary>Notes</summary>
-          <p>
-            Commands won't be sent to Visual Studio if it's running with admin rights unless you run Stream Deck with
-            admin rights too.
-          </p>
-          <br />
-          <p>
-            You can use the action keys at any time whereas you are focusing on a Visual Studio instance or a debugging
-            application started by that instance.
-          </p>
-          <br />
-          <p>
-            Use
-            <a
-              href="https://marketplace.visualstudio.com/items?itemName=MadsKristensen.CommandExplorer"
-              target="_blank"
-            >
-              Command Explorer
-            </a>
-            extension from Visual Studio Marketplace to get the commands name. e.g.: View.C#Interactive.
-          </p>
-        </details>
-      </div>
-    </div>
-
-    <div class="sdpi-info-label hidden" style="top: -1000" value=""></div>
+      <div class="sdpi-info-label hidden" style="top: -1000" value=""></div>
   </body>
 </html>
