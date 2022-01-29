@@ -76,7 +76,7 @@ namespace StreamDeckVS
 
         private bool IsLinkedByPipe(string arguments) => arguments.Contains(@"\\.\pipe\Microsoft-VisualStudio-Debug-Console-");
 
-        private void ExecuteCommand(DTE dte, ExecuteCommandSettings settings) => dte?.ExecuteCommand(settings.Command);
+        private void ExecuteCommand(DTE dte, ExecuteCommandSettings settings) => dte?.ExecuteCommand(settings.Command,settings.CommandArgs);
 
         private bool IsProcessVisualStudio(int processId)
         {
