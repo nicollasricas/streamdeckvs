@@ -6,6 +6,7 @@ namespace StreamDeckVS
     {
         [JsonProperty("command")]
         public string Command { get; set; }
+
         [JsonProperty("commandargs")]
         public string CommandArgs { get; set; }
     }

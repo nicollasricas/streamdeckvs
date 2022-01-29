@@ -20,7 +20,7 @@ namespace StreamDeckVS
 
             try
             {
-                var (processHandle, processId) = Windows32API.GetForeground();
+                (IntPtr processHandle, int processId) = Windows32API.GetForeground();
 
                 if (IsProcessVisualStudio(processId))
                 {
@@ -28,11 +28,11 @@ namespace StreamDeckVS
                 }
                 else
                 {
-                    var dte = DTEAPI.GetDTE().FirstOrDefault(m => IsProcessAttachedToDebug(processId, m));
+                    DTE dte = DTEAPI.GetDTE().FirstOrDefault(m => IsProcessAttachedToDebug(processId, m));
 
                     if (dte is null)
                     {
-                        var processCommandLine = GetProcessCommandLine(processId);
+                        string processCommandLine = GetProcessCommandLine(processId);
 
                         if (IsLinkedByPipe(processCommandLine))
                         {
@@ -54,17 +54,17 @@ namespace StreamDeckVS
 
         private int GetVisualStudioPIDFromPipeLink(string link)
         {
-            var indexLength = @"\\.\pipe\Microsoft-VisualStudio-Debug-Console-".Length;
+            int indexLength = @"\\.\pipe\Microsoft-VisualStudio-Debug-Console-".Length;
 
-            var start = link.IndexOf(@"\\.\pipe\Microsoft-VisualStudio-Debug-Console-");
+            int start = link.IndexOf(@"\\.\pipe\Microsoft-VisualStudio-Debug-Console-");
 
             if (start >= 0)
             {
-                var end = link.IndexOf(" ", start);
+                int end = link.IndexOf(" ", start);
 
                 if (end >= 0)
                 {
-                    if (int.TryParse(link.Substring(start + indexLength, end - start - indexLength), out var pid))
+                    if (int.TryParse(link.Substring(start + indexLength, end - start - indexLength), out int pid))
                     {
                         return pid;
                     }
@@ -76,7 +76,7 @@ namespace StreamDeckVS
 
         private bool IsLinkedByPipe(string arguments) => arguments.Contains(@"\\.\pipe\Microsoft-VisualStudio-Debug-Console-");
 
-        private void ExecuteCommand(DTE dte, ExecuteCommandSettings settings) => dte?.ExecuteCommand(settings.Command,settings.CommandArgs);
+        private void ExecuteCommand(DTE dte, ExecuteCommandSettings settings) => dte?.ExecuteCommand(settings.Command, settings.CommandArgs);
 
         private bool IsProcessVisualStudio(int processId)
         {
@@ -106,9 +106,9 @@ namespace StreamDeckVS
         {
             try
             {
-                var wmi = new ManagementObjectSearcher("root\\CIMV2", $"SELECT * FROM Win32_Process where ProcessId = {processId}");
+                ManagementObjectSearcher wmi = new ManagementObjectSearcher("root\\CIMV2", $"SELECT * FROM Win32_Process where ProcessId = {processId}");
 
-                var process = Enumerable.FirstOrDefault(wmi.Get() as IEnumerable<ManagementObject>);
+                ManagementObject process = Enumerable.FirstOrDefault(wmi.Get() as IEnumerable<ManagementObject>);
 
                 return (string)process?["CommandLine"];
             }
